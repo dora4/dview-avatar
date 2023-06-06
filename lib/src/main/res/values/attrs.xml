@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <declare-styleable name="RoundRectImageView">
+        <attr name="dview_cornerRadius" format="dimension|reference"/>
+        <attr name="dview_drawBorder" format="boolean"/>
+        <attr name="dview_borderColor" format="color|reference"/>
+        <attr name="dview_borderWidth" format="dimension|reference"/>
+    </declare-styleable>
+</resources>
