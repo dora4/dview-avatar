@@ -26,9 +26,25 @@ open class DoraRoundRectImageView @JvmOverloads constructor(
     private var borderPaint: Paint? = null
     private var bitmapShader: BitmapShader? = null
     private var cornerRadius: Float = 0f
+        set(value) {
+            field = value
+            invalidate()
+        }
     private var drawBorder: Boolean = false
+        set(value) {
+            field = value
+            invalidate()
+        }
     private var borderColor: Int = 0
+        set(value) {
+            field = value
+            invalidate()
+        }
     private var borderWidth: Float = 0f
+        set(value) {
+            field = value
+            invalidate()
+        }
 
     private fun initPaints() {
         bitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -40,14 +56,14 @@ open class DoraRoundRectImageView @JvmOverloads constructor(
     }
 
     private fun initAttrs(context: Context, attrs: AttributeSet?) {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.RoundRectImageView)
+        val a = context.obtainStyledAttributes(attrs, R.styleable.DoraRoundRectImageView)
         cornerRadius = a.getDimension(
-            R.styleable.RoundRectImageView_dview_cornerRadius,
+            R.styleable.DoraRoundRectImageView_dview_cornerRadius,
             TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5f, resources.displayMetrics)
         )
-        drawBorder = a.getBoolean(R.styleable.RoundRectImageView_dview_drawBorder, drawBorder)
-        borderColor = a.getColor(R.styleable.RoundRectImageView_dview_borderColor, borderColor)
-        borderWidth = a.getDimension(R.styleable.RoundRectImageView_dview_borderWidth, borderWidth)
+        drawBorder = a.getBoolean(R.styleable.DoraRoundRectImageView_dview_drawBorder, drawBorder)
+        borderColor = a.getColor(R.styleable.DoraRoundRectImageView_dview_borderColor, borderColor)
+        borderWidth = a.getDimension(R.styleable.DoraRoundRectImageView_dview_borderWidth, borderWidth)
         a.recycle()
     }
 
