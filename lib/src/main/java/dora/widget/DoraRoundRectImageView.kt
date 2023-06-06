@@ -26,10 +26,6 @@ open class DoraRoundRectImageView @JvmOverloads constructor(
     private var borderPaint: Paint? = null
     private var bitmapShader: BitmapShader? = null
     private var cornerRadius: Float = 0f
-        set(value) {
-            field = value
-            invalidate()
-        }
     private var drawBorder: Boolean = false
         set(value) {
             field = value
