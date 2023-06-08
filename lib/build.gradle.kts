@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "dora.widget"
+    namespace = "dora.widget.avatar"
     compileSdk = 32
 
     defaultConfig {
@@ -37,7 +37,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.dora4"
                 artifactId = rootProject.project.name
-                version = "1.2"
+                version = "1.3"
             }
         }
     }
