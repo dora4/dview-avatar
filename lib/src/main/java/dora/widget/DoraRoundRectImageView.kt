@@ -14,6 +14,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.Glide
+import dora.widget.avatar.R
 
 open class DoraRoundRectImageView @JvmOverloads constructor(
     context: Context,
