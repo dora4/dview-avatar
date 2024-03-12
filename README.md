@@ -2,7 +2,7 @@ dview-avatar
 ![Release](https://jitpack.io/v/dora4/dview-avatar.svg)
 --------------------------------
 
-#### gradle依赖配置
+#### Gradle依赖配置
 
 ```groovy
 // 添加以下代码到项目根目录下的build.gradle
