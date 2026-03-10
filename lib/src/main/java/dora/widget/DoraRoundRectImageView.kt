@@ -15,6 +15,8 @@ import android.util.TypedValue
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.Glide
 import dora.widget.avatar.R
+import androidx.core.graphics.createBitmap
+import androidx.core.content.withStyledAttributes
 
 open class DoraRoundRectImageView @JvmOverloads constructor(
     context: Context,
@@ -42,6 +44,7 @@ open class DoraRoundRectImageView @JvmOverloads constructor(
             field = value
             invalidate()
         }
+    private val rect = android.graphics.RectF()
 
     private fun initPaints() {
         bitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -53,15 +56,17 @@ open class DoraRoundRectImageView @JvmOverloads constructor(
     }
 
     private fun initAttrs(context: Context, attrs: AttributeSet?) {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.DoraRoundRectImageView)
-        cornerRadius = a.getDimension(
-            R.styleable.DoraRoundRectImageView_dview_cornerRadius,
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5f, resources.displayMetrics)
-        )
-        drawBorder = a.getBoolean(R.styleable.DoraRoundRectImageView_dview_drawBorder, drawBorder)
-        borderColor = a.getColor(R.styleable.DoraRoundRectImageView_dview_borderColor, borderColor)
-        borderWidth = a.getDimension(R.styleable.DoraRoundRectImageView_dview_borderWidth, borderWidth)
-        a.recycle()
+        context.withStyledAttributes(attrs, R.styleable.DoraRoundRectImageView) {
+            cornerRadius = getDimension(
+                R.styleable.DoraRoundRectImageView_dview_cornerRadius,
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5f, resources.displayMetrics)
+            )
+            drawBorder = getBoolean(R.styleable.DoraRoundRectImageView_dview_drawBorder, drawBorder)
+            borderColor =
+                getColor(R.styleable.DoraRoundRectImageView_dview_borderColor, borderColor)
+            borderWidth =
+                getDimension(R.styleable.DoraRoundRectImageView_dview_borderWidth, borderWidth)
+        }
     }
 
     /**
@@ -75,32 +80,32 @@ open class DoraRoundRectImageView @JvmOverloads constructor(
     }
 
     private fun refresh() {
-        if (bitmap != null) {
-            bitmapShader = BitmapShader(bitmap!!, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
-            bitmapPaint!!.shader = bitmapShader
-            invalidate()
-        }
+        val bmp = bitmap ?: return
+        val shader = BitmapShader(bmp, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+        val matrix = android.graphics.Matrix()
+        val scale = maxOf(
+            width.toFloat() / bmp.width,
+            height.toFloat() / bmp.height
+        )
+        matrix.setScale(scale, scale)
+        shader.setLocalMatrix(matrix)
+        bitmapShader = shader
+        bitmapPaint?.shader = bitmapShader
+        invalidate()
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        refresh()
     }
 
     override fun onDraw(canvas: Canvas) {
-        val halfPaintWidth = borderWidth / 2
-        canvas.drawRoundRect(
-            0f,
-            0f,
-            width.toFloat(),
-            height.toFloat(),
-            cornerRadius,
-            cornerRadius,
-            bitmapPaint!!
-        )
+        rect.set(0f, 0f, width.toFloat(), height.toFloat())
+        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, bitmapPaint!!)
         if (drawBorder) {
-            canvas.drawRoundRect(
-                halfPaintWidth,
-                halfPaintWidth,
-                width.toFloat() - halfPaintWidth,
-                height.toFloat() - halfPaintWidth,
-                cornerRadius,
-                cornerRadius, borderPaint!!)
+            val half = borderWidth / 2
+            rect.set(half, half, width - half, height - half)
+            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, borderPaint!!)
         }
     }
 
@@ -114,8 +119,10 @@ open class DoraRoundRectImageView @JvmOverloads constructor(
     }
 
     fun loadUrl(url: String) {
-        scaleType = ScaleType.CENTER
-        Glide.with(this).load(url).centerCrop().into(this)
+        Glide.with(this)
+            .load(url)
+            .dontTransform()
+            .into(this)
     }
 
     override fun setImageURI(uri: Uri?) {
@@ -141,17 +148,9 @@ open class DoraRoundRectImageView @JvmOverloads constructor(
             drawable.bitmap
         } else try {
             val bitmap = if (drawable is ColorDrawable) {
-                Bitmap.createBitmap(
-                    COLOR_DRAWABLE_DIMENSION,
-                    COLOR_DRAWABLE_DIMENSION,
-                    BITMAP_CONFIG
-                )
+                createBitmap(COLOR_DRAWABLE_DIMENSION, COLOR_DRAWABLE_DIMENSION, BITMAP_CONFIG)
             } else {
-                Bitmap.createBitmap(
-                    drawable.intrinsicWidth,
-                    drawable.intrinsicHeight,
-                    BITMAP_CONFIG
-                )
+                createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, BITMAP_CONFIG)
             }
             val canvas = Canvas(bitmap)
             if (drawBorder) {
